@@ -126,4 +126,4 @@ $RECYCLE.BIN/
 pyvenv.cfg
 pip-selfcheck.json
 logs/*
-^logs/.gitkeep
+!.gitkeep

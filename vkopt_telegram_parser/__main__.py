@@ -2,10 +2,9 @@
 Main file!
 """
 import argparse
-import itertools
 import logging
 
-from vkopt_telegram_parser import utils, vk
+from vkopt_telegram_parser import utils, vk, tg
 
 log = logging.getLogger('vkopt-telegram-parser')
 
@@ -61,21 +60,20 @@ def main():
         action='append',
         nargs=1,
         type=str,
-        help='select usernames to extract without @ (Telegram)',
-        metavar='username',
+        help='select names to extract (Telegram; do not confuse with a username!)',
+        metavar='name',
         dest='tg_ids'
     )
     args = arg_parser.parse_args()
     if args.verbose:
         utils.init_logging(debug=True)
         log.debug('Logger reinitialized, debug logs enabled')
+
     vk_results_list = []
     for vk_file in args.vk_files or []:
         vk_results_list.append(
             vk.parse_file(vk_file[0], args.vk_ids[0] if args.vk_ids else None)
         )
-
-    vk_entries = list(itertools.chain.from_iterable(vk_results_list))
 
     tg_results_list = []
     for tg_file in args.tg_files or []:

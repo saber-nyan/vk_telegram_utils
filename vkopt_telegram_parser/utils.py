@@ -4,8 +4,15 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOG_DIR = os.path.join(BASE_DIR, 'logs')
 
+log = logging.getLogger('vkopt-telegram-parser.utils')
+
+
+def str_none_or_empty(string: str) -> bool:
+    return not string or not string.strip()
+
 
 def init_logging(debug):
+    log_all_file = os.path.join(LOG_DIR, 'all.log')
     config = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -28,7 +35,7 @@ def init_logging(debug):
             'file': {
                 'level': 'DEBUG',
                 'class': 'logging.FileHandler',
-                'filename': os.path.join(LOG_DIR, 'all.log'),
+                'filename': log_all_file,
                 'mode': 'wt',
                 'encoding': 'utf-8',
                 'formatter': 'file_text',
@@ -52,3 +59,4 @@ def init_logging(debug):
         },
     }
     logging.config.dictConfig(config)
+    log.info('Initialised loggers, logging to file "%s"', log_all_file)
