@@ -18,6 +18,7 @@ setup(
     install_requires=[
         'beautifulsoup4==4.8.2',
         'lxml==4.5.0',
+        'ujson==1.35',
     ],
     packages=find_packages(),
     include_package_data=True

@@ -11,7 +11,7 @@ def str_none_or_empty(string: str) -> bool:
     return not string or not string.strip()
 
 
-def init_logging(debug):
+def init_logging(debug: bool) -> None:
     log_all_file = os.path.join(LOG_DIR, 'all.log')
     config = {
         'version': 1,
