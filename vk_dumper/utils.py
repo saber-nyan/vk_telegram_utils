@@ -4,15 +4,11 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOG_DIR = os.path.join(BASE_DIR, 'logs')
 
-log = logging.getLogger('vkopt-telegram-parser.utils')
-
-
-def str_none_or_empty(string: str) -> bool:
-    return not string or not string.strip()
+log = logging.getLogger('vk-dumper.utils')
 
 
 def init_logging(debug: bool) -> None:
-    log_all_file = os.path.join(LOG_DIR, 'vkopt_telegram_parser.log')
+    log_all_file = os.path.join(LOG_DIR, 'vk_dumper.log')
     config = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -46,7 +42,7 @@ def init_logging(debug: bool) -> None:
                 'level': 'DEBUG',
                 'handlers': ['console', 'file', ],
             },
-            'vkopt-telegram-parser': {
+            'vk-dumper': {
                 'level': 'DEBUG',
                 'handlers': ['console', 'file', ],
                 'propagate': False,

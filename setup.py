@@ -19,6 +19,7 @@ setup(
         'beautifulsoup4==4.8.2',
         'lxml==4.5.0',
         'ujson==1.35',
+        'vk-api==11.7.0',
     ],
     packages=find_packages(),
     include_package_data=True

@@ -127,3 +127,4 @@ pyvenv.cfg
 pip-selfcheck.json
 logs/*
 !.gitkeep
+vk_config.json
