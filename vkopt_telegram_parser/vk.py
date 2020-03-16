@@ -33,6 +33,7 @@ def parse_file(file: TextIO, user_ids_raw: Optional[List[str]]) -> List[Dict[str
         log.debug('Got message "%s" from "%s"', message, sender_id)
         if utils.str_none_or_empty(message):
             log.debug('Skipping empty message (attachment?)')
+            continue
         result.append({
             'from': sender_id[1:],
             'message': message,

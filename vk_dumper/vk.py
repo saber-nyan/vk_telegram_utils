@@ -30,9 +30,11 @@ def get_user_by_id_cached(vk: vk_api.vk_api.VkApiMethod,
         return user_info
 
 
-def dump_messages(login: str, password: str) -> List[
-    Dict[str, Union[str, int, Dict[str, Union[str, int]]]]
-]:
+def dump_messages(
+        login: str, password: str,
+        message_count: Optional[int],
+        user_ids: Optional[List[str]]
+) -> List[Dict[str, Union[str, int, Dict[str, Union[str, int]]]]]:
     log.info('Logging in as %s', login)
     session = vk_api.VkApi(
         login, password,
@@ -46,6 +48,7 @@ def dump_messages(login: str, password: str) -> List[
     tools = vk_api.VkTools(vk)
     log.info('Authentication succeed')
 
+    current_messages = 0
     results: List[
         Dict[str, Union[str, int, Dict[str, Union[str, int]]]]
     ] = []
@@ -83,8 +86,20 @@ def dump_messages(login: str, password: str) -> List[
             date: int = message['date']
             body: str = message['text']
 
+            if user_ids and domain not in user_ids:
+                log.debug('Skipping not selected id "%s"', domain)
+                continue
+
+            if utils.str_none_or_empty(body):
+                log.debug('Skipping empty message (attachment?)')
+                continue
+
             log.debug('Saving message "%s" at %d from @%s (%s %s)',
                       body, date, domain, last_name, first_name)
             message['sender'] = sender_user
             results.append(message)
+            current_messages += 1
+            if message_count and current_messages >= message_count:
+                log.info('Got %d messages out of %d, stopping', current_messages, message_count)
+                return results
     return results

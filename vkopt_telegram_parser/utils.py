@@ -1,5 +1,6 @@
 import logging.config
 import os
+from typing import Optional
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOG_DIR = os.path.join(BASE_DIR, 'logs')
@@ -7,7 +8,7 @@ LOG_DIR = os.path.join(BASE_DIR, 'logs')
 log = logging.getLogger('vkopt-telegram-parser.utils')
 
 
-def str_none_or_empty(string: str) -> bool:
+def str_none_or_empty(string: Optional[str]) -> bool:
     return not string or not string.strip()
 
 
