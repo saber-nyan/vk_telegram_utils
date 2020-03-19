@@ -62,10 +62,15 @@ def main() -> None:
             translator = str.maketrans(bad_chars, ' ' * len(bad_chars))
             stripped = [word.translate(translator) for word in words]
             sanitized += ' '.join(stripped) + ' '
+            if args.markovify:
+                sanitized += '\n'
 
-        text_file.write(
-            ' '.join(sanitized.strip().split())
-        )
+        if args.markovify:
+            text_file.write(sanitized)
+        else:
+            text_file.write(
+                ' '.join(sanitized.strip().split())
+            )
         log.info('...done')
 
 
@@ -82,7 +87,7 @@ def parse_args() -> argparse.Namespace:
         dest='verbose'
     )
     arg_parser.add_argument(
-        '--message-count', '-m',
+        '--message-count', '-c',
         action='store',
         nargs=1,
         type=int,
@@ -95,7 +100,7 @@ def parse_args() -> argparse.Namespace:
         action='append',
         nargs=1,
         type=str,
-        help='select usernames to extract, without @ (VkOpt)',
+        help='select usernames to extract, without @',
         metavar='username',
         dest='vk_ids'
     )
@@ -129,6 +134,12 @@ def parse_args() -> argparse.Namespace:
         help='choose a path to dump results as plain text',
         metavar='/path/to/dump.txt',
         dest='text_file'
+    )
+    arg_parser.add_argument(
+        '--markov', '-m',
+        action='store_true',
+        help='store plaintext with line break after each message for markovify',
+        dest='markovify'
     )
     arg_parser.add_argument(
         'login',
