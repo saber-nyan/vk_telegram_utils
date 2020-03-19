@@ -7,13 +7,13 @@ with open('README.md', mode='r', encoding='utf-8') as f:
     readme = f.read()
 
 setup(
-    name='vkopt_telegram_parser',
+    name='vk_telegram_utils',
     version='0.0.1',
     description='Utilities for collecting dialog data from VK.com (VkOpt dump) and Telegram',
     long_description=readme,
     author='saber-nyan',
     author_email='saber-nyan@ya.ru',
-    url='https://github.com/saber-nyan/vkopt_telegram_parser',
+    url='https://github.com/saber-nyan/vk_telegram_utils',
     license='WTFPL',
     install_requires=[
         'beautifulsoup4==4.8.2',
