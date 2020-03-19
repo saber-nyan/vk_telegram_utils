@@ -53,53 +53,60 @@ def dump_messages(
         Dict[str, Union[str, int, Dict[str, Union[str, int]]]]
     ] = []
     log.debug('Getting dialogs...')
-    for dialog in tools.get_all_iter(
-            'messages.getConversations',
-            max_count=200,
-    ):
-        peer_id: int = dialog['conversation']['peer']['id']
-        user_info = get_user_by_id_cached(vk, peer_id)
-        if not user_info:
-            log.debug('Skipping...')
-            continue
-        domain: str = user_info['domain']
-        first_name: str = user_info['first_name']
-        last_name: str = user_info['last_name']
-        log.info('Processing dialog w/ @%s (%s %s)', domain, last_name, first_name)
-
-        message: Dict[str, Union[str, int, Dict[str, Union[str, int]]]]
-        for message in tools.get_all_iter(
-                'messages.getHistory', max_count=200,
-                values={
-                    'peer_id': peer_id,
-                    'rev': 1,
-                }
+    # noinspection PyBroadException
+    try:
+        for dialog in tools.get_all_iter(
+                'messages.getConversations',
+                max_count=200,
         ):
-            sender_user = get_user_by_id_cached(vk, message['from_id'])
-            domain: Optional[str] = None
-            first_name: Optional[str] = None
-            last_name: Optional[str] = None
-            if sender_user:
-                domain = sender_user['domain']
-                first_name = sender_user['first_name']
-                last_name = sender_user['last_name']
-            date: int = message['date']
-            body: str = message['text']
+            peer_id: int = dialog['conversation']['peer']['id']
+            user_info = get_user_by_id_cached(vk, peer_id)
+            if user_info:
+                domain: Optional[str] = user_info.get('domain')
+                first_name: Optional[str] = user_info.get('first_name')
+                last_name: Optional[str] = user_info.get('last_name')
+                log.info('Processing dialog w/ @%s (%s %s), total msgs: %d',
+                         domain, last_name, first_name, current_messages)
+            else:
+                log.info('Processing dialog #%d, total msgs: %d',
+                         peer_id, current_messages)
 
-            if user_ids and domain not in user_ids:
-                log.debug('Skipping not selected id "%s"', domain)
-                continue
+            message: Dict[str, Union[str, int, Dict[str, Union[str, int]]]]
+            for message in tools.get_all_iter(
+                    'messages.getHistory', max_count=200,
+                    values={
+                        'peer_id': peer_id,
+                        'rev': 1,
+                    }
+            ):
+                sender_user = get_user_by_id_cached(vk, message['from_id'])
+                domain: Optional[str] = None
+                first_name: Optional[str] = None
+                last_name: Optional[str] = None
+                if sender_user:
+                    domain = sender_user.get('domain')
+                    first_name = sender_user.get('first_name')
+                    last_name = sender_user.get('last_name')
+                date: Optional[int] = message.get('date')
+                body: Optional[str] = message.get('text')
 
-            if utils.str_none_or_empty(body):
-                log.debug('Skipping empty message (attachment?)')
-                continue
+                if user_ids and domain not in user_ids:
+                    log.debug('Skipping not selected id "%s"', domain)
+                    continue
 
-            log.debug('Saving message "%s" at %d from @%s (%s %s)',
-                      body, date, domain, last_name, first_name)
-            message['sender'] = sender_user
-            results.append(message)
-            current_messages += 1
-            if message_count and current_messages >= message_count:
-                log.info('Got %d messages out of %d, stopping', current_messages, message_count)
-                return results
+                if utils.str_none_or_empty(body):
+                    log.debug('Skipping empty message (attachment?)')
+                    continue
+
+                log.debug('Saving message "%s" at %d from @%s (%s %s)',
+                          body, date, domain, last_name, first_name)
+                message['sender'] = sender_user
+                results.append(message)
+                current_messages += 1
+                if message_count and current_messages >= message_count:
+                    log.info('Got %d messages out of %d, stopping', current_messages, message_count)
+                    return results
+    except Exception:
+        log.critical('Got unexpected exception, saving and exiting!', exc_info=True)
+        return results
     return results
