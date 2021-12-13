@@ -17,7 +17,7 @@ setup(
     license='WTFPL',
     install_requires=[
         'beautifulsoup4==4.8.2',
-        'lxml==4.5.0',
+        'lxml==4.6.5',
         'ujson==1.35',
         'vk-api==11.7.0',
     ],
